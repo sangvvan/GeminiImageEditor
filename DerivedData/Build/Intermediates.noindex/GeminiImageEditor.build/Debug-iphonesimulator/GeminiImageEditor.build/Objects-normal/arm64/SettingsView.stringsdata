@@ -1,0 +1,128 @@
+{
+  "source": "/Users/hikaruvo/Documents/Documents - Hikaru’s MacBook Air/Developer/GeminiApp/GeminiImageEditor-1/GeminiImageEditor/SettingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 145
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 134
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 137
+        }
+      },
+      {
+        "comment": "",
+        "key": "OpenAI Configuration",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 27
+        }
+      },
+      {
+        "comment": "",
+        "key": "Configure your OpenAI API key to enable AI features",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "API Key",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your API key is stored locally and never shared. Get your key from https://platform.openai.com/api-keys",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 49
+        }
+      },
+      {
+        "comment": "",
+        "key": "Enter your OpenAI API key",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 44
+        }
+      },
+      {
+        "comment": "",
+        "key": "API Key Configured",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "API Key Not Configured",
+        "location": {
+          "startingColumn": 64,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save API Key",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Test Connection",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Clear API Key",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 102
+        }
+      },
+      {
+        "comment": "",
+        "key": "How to get your API Key:",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 115
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 146
+        }
+      }
+    ]
+  },
+  "version": 1
+}

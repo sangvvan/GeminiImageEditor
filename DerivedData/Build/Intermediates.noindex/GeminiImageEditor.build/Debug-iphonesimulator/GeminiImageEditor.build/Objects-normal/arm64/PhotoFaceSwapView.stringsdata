@@ -1,0 +1,112 @@
+{
+  "source": "/Users/hikaruvo/Documents/Documents - Hikaru’s MacBook Air/Developer/GeminiApp/GeminiImageEditor-1/GeminiImageEditor/PhotoFaceSwapView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Face Swap",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 165
+        }
+      },
+      {
+        "comment": "",
+        "key": "Photo Face Swap",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 151
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 154
+        }
+      },
+      {
+        "comment": "",
+        "key": "Photo Face Swap",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 34
+        }
+      },
+      {
+        "comment": "",
+        "key": "Swap faces between two photos using AI",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 38
+        }
+      },
+      {
+        "comment": "",
+        "key": "Source Face (Face to copy)",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 47
+        }
+      },
+      {
+        "comment": "",
+        "key": "Target Photo (Photo to modify)",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Processing...",
+        "location": {
+          "startingColumn": 49,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "Swap Faces",
+        "location": {
+          "startingColumn": 67,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "AI Analysis Result",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "Result",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 121
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save to Photos",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 136
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 166
+        }
+      }
+    ]
+  },
+  "version": 1
+}

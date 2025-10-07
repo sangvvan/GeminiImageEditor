@@ -1,0 +1,112 @@
+{
+  "source": "/Users/hikaruvo/Documents/Documents - Hikaru’s MacBook Air/Developer/GeminiApp/GeminiImageEditor-1/GeminiImageEditor/TextToVideoView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Video Generation",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 116
+        }
+      },
+      {
+        "comment": "",
+        "key": "Text to Video",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 108
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "Text To Video",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 30
+        }
+      },
+      {
+        "comment": "",
+        "key": "Describe your video idea and let AI create it for you",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 34
+        }
+      },
+      {
+        "comment": "",
+        "key": "Describe your video",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 43
+        }
+      },
+      {
+        "comment": "",
+        "key": "Example: A cat playing with a ball of yarn in a sunny garden",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 57
+        }
+      },
+      {
+        "comment": "",
+        "key": "Generating Video...",
+        "location": {
+          "startingColumn": 45,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "Generate Video",
+        "location": {
+          "startingColumn": 69,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "AI Generated Video Description",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 87
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 117
+        }
+      },
+      {
+        "comment": "",
+        "key": "Video Preview",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 167
+        }
+      },
+      {
+        "comment": "",
+        "key": "Play Video",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 176
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,50 @@
+{
+  "screen": {
+    "id": "home_screen",
+    "platform": "iOS",
+    "statusBar": {
+      "time": "18:54",
+      "batteryLevel": 67,
+      "wifi": true,
+      "cellular": true,
+      "style": "darkContent"
+    },
+    "navigation": {
+      "title": "MakeIt",
+      "largeTitle": true,
+      "background": "transparent"
+    },
+    "header": {
+      "type": "carousel",
+      "items": [
+        {
+          "image": "banner_train_mountain.jpg",
+          "title": "Text To Video",
+          "subtitle": "One sentence, AI makes a video",
+          "button": {
+            "type": "link",
+            "icon": "chevron.right",
+            "destination": "text_to_video_screen"
+          }
+        }
+      ],
+      "pageIndicator": true,
+      "autoScroll": true
+    },
+    "content": [
+      {
+        "type": "grid",
+        "id": "main_features",
+        "columns": 2,
+        "items": [
+          {
+            "title": "Photo Face Swap",
+            "icon": "person.crop.square",
+            "backgroundColor": "#F0FAFF",
+            "action": "open_photo_face_swap"
+          },
+          {
+            "title": "Video Face Swap",
+            "icon": "video.circle",
+            "backgroundColor": "#F0FAFF",
+            "action": "open_video_face_swap"

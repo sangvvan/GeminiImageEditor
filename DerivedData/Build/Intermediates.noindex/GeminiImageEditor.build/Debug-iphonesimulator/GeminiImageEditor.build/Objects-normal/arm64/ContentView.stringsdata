@@ -1,0 +1,16 @@
+{
+  "source": "/Users/hikaruvo/Documents/Documents - Hikaru’s MacBook Air/Developer/GeminiApp/GeminiImageEditor-1/GeminiImageEditor/ContentView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "MakeIt",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 59
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,128 @@
+{
+  "source": "/Users/hikaruvo/Documents/Documents - Hikaru’s MacBook Air/Developer/GeminiApp/GeminiImageEditor-1/GeminiImageEditor/VideoFaceSwapView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Video Face Swap",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 140
+        }
+      },
+      {
+        "comment": "",
+        "key": "Video Face Swap",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 126
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 129
+        }
+      },
+      {
+        "comment": "",
+        "key": "Video Face Swap",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Swap a face from a photo into a video using AI",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Source Face (Face to copy)",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 46
+        }
+      },
+      {
+        "comment": "",
+        "key": "Target Video (Video to modify)",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Processing Video...",
+        "location": {
+          "startingColumn": 49,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "Swap Face in Video",
+        "location": {
+          "startingColumn": 73,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "Result Video",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 98
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save to Photos",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 141
+        }
+      },
+      {
+        "comment": "",
+        "key": "Video Selected",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 226
+        }
+      },
+      {
+        "comment": "",
+        "key": "Processed Video",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 247
+        }
+      },
+      {
+        "comment": "",
+        "key": "Play Result",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 256
+        }
+      }
+    ]
+  },
+  "version": 1
+}
