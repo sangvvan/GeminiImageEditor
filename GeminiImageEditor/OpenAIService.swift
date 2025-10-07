@@ -14,10 +14,10 @@ class OpenAIService: ObservableObject {
     
     init() {
         // TODO: Replace with your actual OpenAI API key
-        self.apiKey = "your_openai_api_key_here"
+        self.apiKey = "YOUR_OPENAI_API_KEY_HERE"
         
         // Check if we have a valid API key
-        if apiKey == "your_openai_api_key_here" || apiKey.isEmpty {
+        if apiKey == "YOUR_OPENAI_API_KEY_HERE" || apiKey.isEmpty {
             print("⚠️ WARNING: No valid OpenAI API key found!")
             print("Please configure your OpenAI API key to use AI features.")
             print("Get your API key from: https://platform.openai.com/api-keys")
