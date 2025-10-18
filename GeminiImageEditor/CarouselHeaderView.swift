@@ -11,24 +11,24 @@ struct CarouselHeaderView: View {
     @State private var currentIndex = 0
     let onTextToVideoTap: () -> Void
     
+    private let carouselItems = [
+        ("Text To Video", "One sentence, AI makes a video", "banner_1"),
+        ("AI Photo Enhancement", "Transform your photos with AI magic", "banner_2"),
+        ("Face Swap", "Swap faces in photos and videos", "banner_3"),
+        ("Image Generation", "Generate images from descriptions", "banner_4")
+    ]
+    
     var body: some View {
         TabView(selection: $currentIndex) {
-            CarouselItemView(
-                title: "Text To Video",
-                subtitle: "One sentence, AI makes a video",
-                backgroundImage: "banner_train_mountain",
-                onTap: onTextToVideoTap
-            )
-            .tag(0)
-            
-            // Additional carousel items can be added here
-            CarouselItemView(
-                title: "AI Photo Enhancement",
-                subtitle: "Transform your photos with AI magic",
-                backgroundImage: "banner_photo",
-                onTap: {}
-            )
-            .tag(1)
+            ForEach(0..<carouselItems.count, id: \.self) { index in
+                CarouselItemView(
+                    title: carouselItems[index].0,
+                    subtitle: carouselItems[index].1,
+                    backgroundImage: carouselItems[index].2,
+                    onTap: index == 0 ? onTextToVideoTap : {}
+                )
+                .tag(index)
+            }
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
         .frame(height: 200)
@@ -36,7 +36,7 @@ struct CarouselHeaderView: View {
             // Auto-scroll functionality
             Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
                 withAnimation(.easeInOut(duration: 1.0)) {
-                    currentIndex = (currentIndex + 1) % 2
+                    currentIndex = (currentIndex + 1) % carouselItems.count
                 }
             }
         }
@@ -51,32 +51,49 @@ struct CarouselItemView: View {
     
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color.blue.opacity(0.8),
-                    Color.purple.opacity(0.6)
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            // Background image
+            Image(backgroundImage)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .clipped()
             
-            VStack(alignment: .leading, spacing: 12) {
-                Text(title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.9))
+            // Adaptive overlay for better text readability in both light and dark modes
+            Color.primary.opacity(0.15)
+                .overlay(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.black.opacity(0.2),
+                            Color.clear,
+                            Color.black.opacity(0.4)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            
+            VStack(alignment: .leading, spacing: 8) {
+                // Title section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                    
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                        .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 
                 Spacer()
                 
+                // Button section
                 HStack {
                     Spacer()
                     Button(action: onTap) {
-                        HStack(spacing: 8) {
+                        HStack(spacing: 6) {
                             Text("Try Now")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
@@ -85,13 +102,20 @@ struct CarouselItemView: View {
                         }
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(Color.white.opacity(0.2))
-                        .cornerRadius(20)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.white.opacity(0.25))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                )
+                        )
                     }
                 }
             }
-            .padding(20)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
         .cornerRadius(16)

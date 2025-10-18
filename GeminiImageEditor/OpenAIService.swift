@@ -13,230 +13,81 @@ class OpenAIService: ObservableObject {
     private let baseURL = "https://api.openai.com/v1"
     
     init() {
-        // TODO: Replace with your actual OpenAI API key
-        self.apiKey = "YOUR_OPENAI_API_KEY_HERE"
-        
-        // Check if we have a valid API key
-        if apiKey == "YOUR_OPENAI_API_KEY_HERE" || apiKey.isEmpty {
-            print("⚠️ WARNING: No valid OpenAI API key found!")
-            print("Please configure your OpenAI API key to use AI features.")
-            print("Get your API key from: https://platform.openai.com/api-keys")
+        // Try to load API key from multiple sources
+        if let envKey = ENVLoader.shared.openaiAPIKey, !envKey.isEmpty {
+            self.apiKey = envKey
+            print("✅ OpenAI API key loaded from .env file or environment variable")
+        } else {
+            // Fallback to secure storage for development
+            if let storedKey = KeychainHelper.shared.load(forKey: "openai_api_key"), !storedKey.isEmpty {
+                self.apiKey = storedKey
+                print("✅ OpenAI API key loaded from secure storage (development mode)")
+            } else {
+                self.apiKey = ""
+                print("⚠️ WARNING: No OpenAI API key found!")
+                print("Please add OPENAI_API_KEY to your .env file or set environment variable.")
+                print("Get your API key from: https://platform.openai.com/api-keys")
+            }
         }
     }
     
     // MARK: - Configuration
     
-    /// Update the API key (call this method with your actual API key)
+    /// Update the API key and store it securely in Keychain (development mode only)
     func configureAPIKey(_ newKey: String) {
-        self.apiKey = newKey
-        print("✅ OpenAI API key configured successfully!")
+        // Only allow manual configuration if no environment variable is set
+        if ProcessInfo.processInfo.environment["OPENAI_API_KEY"]?.isEmpty ?? true {
+            self.apiKey = newKey
+            
+            // Store in Keychain for secure persistence
+            if KeychainHelper.shared.save(newKey, forKey: "openai_api_key") {
+                print("✅ OpenAI API key configured and stored securely! (development mode)")
+            } else {
+                print("⚠️ Warning: API key configured but failed to store securely")
+            }
+        } else {
+            print("⚠️ Manual API key configuration disabled in production mode")
+            print("API key is loaded from environment variable OPENAI_API_KEY")
+        }
     }
     
-    // MARK: - Text to Video Generation
+    /// Remove API key from secure storage (development mode only)
+    func clearAPIKey() {
+        // Only allow clearing if no environment variable is set
+        if ProcessInfo.processInfo.environment["OPENAI_API_KEY"]?.isEmpty ?? true {
+            self.apiKey = ""
+            _ = KeychainHelper.shared.delete(forKey: "openai_api_key")
+            print("✅ OpenAI API key cleared from secure storage (development mode)")
+        } else {
+            print("⚠️ API key clearing disabled in production mode")
+            print("API key is managed via environment variable OPENAI_API_KEY")
+        }
+    }
     
-    func generateVideoFromText(_ prompt: String) async throws -> String {
-        guard apiKey != "YOUR_OPENAI_API_KEY_HERE" else {
+    /// Test the OpenAI API connection
+    func testAPIConnection() async throws -> String {
+        guard !apiKey.isEmpty else {
             throw OpenAIError.missingAPIKey
         }
         
-        // Note: OpenAI doesn't have direct text-to-video API yet
-        // This would typically use a service like RunwayML, Stable Video Diffusion, or similar
-        // For demo purposes, we'll return a simulated response
-        
-        let requestBody: [String: Any] = [
-            "model": "gpt-4",
-            "messages": [
-                [
-                    "role": "system",
-                    "content": "You are a video generation assistant. Create a detailed description of what a video based on the given prompt would look like, including scenes, camera movements, and visual elements."
-                ],
-                [
-                    "role": "user",
-                    "content": "Generate a video description for: \(prompt)"
-                ]
-            ],
-            "max_tokens": 500
-        ]
-        
-        let response = try await makeAPICall(endpoint: "/chat/completions", body: requestBody)
-        
-        if let choices = response["choices"] as? [[String: Any]],
-           let firstChoice = choices.first,
-           let message = firstChoice["message"] as? [String: Any],
-           let content = message["content"] as? String {
-            return content
-        }
-        
-        throw OpenAIError.invalidResponse
-    }
-    
-    // MARK: - Face Swap Analysis
-    
-    func analyzeFaceSwapImages(sourceImage: UIImage, targetImage: UIImage) async throws -> String {
-        guard apiKey != "YOUR_OPENAI_API_KEY_HERE" else {
-            throw OpenAIError.missingAPIKey
-        }
-        
-        // Convert images to base64
-        guard let sourceData = sourceImage.jpegData(compressionQuality: 0.8),
-              let targetData = targetImage.jpegData(compressionQuality: 0.8) else {
-            throw OpenAIError.imageProcessingFailed
-        }
-        
-        let sourceBase64 = sourceData.base64EncodedString()
-        let targetBase64 = targetData.base64EncodedString()
-        
-        let requestBody: [String: Any] = [
-            "model": "gpt-4o",
-            "messages": [
-                [
-                    "role": "user",
-                    "content": [
-                        [
-                            "type": "text",
-                            "text": "Analyze these two images for face swap compatibility. Describe the faces, lighting conditions, angles, and provide recommendations for the best face swap approach. Consider factors like face shape, skin tone, lighting, and image quality."
-                        ],
-                        [
-                            "type": "image_url",
-                            "image_url": [
-                                "url": "data:image/jpeg;base64,\(sourceBase64)"
-                            ]
-                        ],
-                        [
-                            "type": "image_url",
-                            "image_url": [
-                                "url": "data:image/jpeg;base64,\(targetBase64)"
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            "max_tokens": 500
-        ]
-        
-        let response = try await makeAPICall(endpoint: "/chat/completions", body: requestBody)
-        
-        if let choices = response["choices"] as? [[String: Any]],
-           let firstChoice = choices.first,
-           let message = firstChoice["message"] as? [String: Any],
-           let content = message["content"] as? String {
-            return content
-        }
-        
-        throw OpenAIError.invalidResponse
-    }
-    
-    // MARK: - Video Face Swap Analysis
-    
-    func analyzeVideoForFaceSwap(sourceImage: UIImage, videoDescription: String) async throws -> String {
-        guard apiKey != "YOUR_OPENAI_API_KEY_HERE" else {
-            throw OpenAIError.missingAPIKey
-        }
-        
-        guard let imageData = sourceImage.jpegData(compressionQuality: 0.8) else {
-            throw OpenAIError.imageProcessingFailed
-        }
-        
-        let imageBase64 = imageData.base64EncodedString()
-        
-        let requestBody: [String: Any] = [
-            "model": "gpt-4o",
-            "messages": [
-                [
-                    "role": "user",
-                    "content": [
-                        [
-                            "type": "text",
-                            "text": "Analyze this face image for video face swap. The video content is: \(videoDescription). Provide recommendations for face swap implementation, considering lighting, movement, and facial expressions that would work best in the video context."
-                        ],
-                        [
-                            "type": "image_url",
-                            "image_url": [
-                                "url": "data:image/jpeg;base64,\(imageBase64)"
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            "max_tokens": 500
-        ]
-        
-        let response = try await makeAPICall(endpoint: "/chat/completions", body: requestBody)
-        
-        if let choices = response["choices"] as? [[String: Any]],
-           let firstChoice = choices.first,
-           let message = firstChoice["message"] as? [String: Any],
-           let content = message["content"] as? String {
-            return content
-        }
-        
-        throw OpenAIError.invalidResponse
-    }
-    
-    // MARK: - General Image Analysis
-    
-    func analyzeImage(_ image: UIImage, prompt: String) async throws -> String {
-        guard apiKey != "YOUR_OPENAI_API_KEY_HERE" else {
-            throw OpenAIError.missingAPIKey
-        }
-        
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw OpenAIError.imageProcessingFailed
-        }
-        
-        let imageBase64 = imageData.base64EncodedString()
-        
-        let requestBody: [String: Any] = [
-            "model": "gpt-4o",
-            "messages": [
-                [
-                    "role": "user",
-                    "content": [
-                        [
-                            "type": "text",
-                            "text": prompt
-                        ],
-                        [
-                            "type": "image_url",
-                            "image_url": [
-                                "url": "data:image/jpeg;base64,\(imageBase64)"
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            "max_tokens": 500
-        ]
-        
-        let response = try await makeAPICall(endpoint: "/chat/completions", body: requestBody)
-        
-        if let choices = response["choices"] as? [[String: Any]],
-           let firstChoice = choices.first,
-           let message = firstChoice["message"] as? [String: Any],
-           let content = message["content"] as? String {
-            return content
-        }
-        
-        throw OpenAIError.invalidResponse
-    }
-    
-    // MARK: - Helper Methods
-    
-    private func makeAPICall(endpoint: String, body: [String: Any]) async throws -> [String: Any] {
-        guard let url = URL(string: baseURL + endpoint) else {
-            throw OpenAIError.invalidURL
-        }
-        
+        let url = URL(string: "\(baseURL)/chat/completions")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        } catch {
-            throw OpenAIError.encodingError
-        }
+        let requestBody: [String: Any] = [
+            "model": "gpt-3.5-turbo",
+            "messages": [
+                [
+                    "role": "user",
+                    "content": "Hello! This is a test to verify the API key works. Please respond with 'API Test Successful!'"
+                ]
+            ],
+            "max_tokens": 50
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -244,50 +95,131 @@ class OpenAIService: ObservableObject {
             throw OpenAIError.invalidResponse
         }
         
-        guard httpResponse.statusCode == 200 else {
-            if let errorData = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let error = errorData["error"] as? [String: Any],
-               let message = error["message"] as? String {
-                throw OpenAIError.apiError(message)
-            }
-            throw OpenAIError.httpError(httpResponse.statusCode)
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorResponse = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw OpenAIError.apiError("HTTP \(httpResponse.statusCode): \(errorResponse)")
         }
         
-        guard let jsonResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let choices = json["choices"] as? [[String: Any]],
+           let firstChoice = choices.first,
+           let message = firstChoice["message"] as? [String: Any],
+           let content = message["content"] as? String {
+            return content.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            throw OpenAIError.invalidResponse
+        }
+    }
+    
+    // MARK: - Text to Video Generation
+    
+    func generateVideoFromText(_ prompt: String) async throws -> String {
+        guard !apiKey.isEmpty else {
+            throw OpenAIError.missingAPIKey
+        }
+        
+        let url = URL(string: "\(baseURL)/chat/completions")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let requestBody: [String: Any] = [
+            "model": "gpt-3.5-turbo",
+            "messages": [
+                [
+                    "role": "system",
+                    "content": "You are a creative video script assistant. Generate a concise and engaging description for a short video based on the user's prompt."
+                ],
+                [
+                    "role": "user",
+                    "content": "Generate a video description for: \(prompt)"
+                ]
+            ],
+            "max_tokens": 150,
+            "temperature": 0.7
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw OpenAIError.invalidResponse
         }
         
-        return jsonResponse
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorResponse = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw OpenAIError.apiError("HTTP \(httpResponse.statusCode): \(errorResponse)")
+        }
+        
+        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let choices = json["choices"] as? [[String: Any]],
+           let firstChoice = choices.first,
+           let message = firstChoice["message"] as? [String: Any],
+           let content = message["content"] as? String {
+            return content.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            throw OpenAIError.invalidResponse
+        }
     }
-}
-
-// MARK: - Error Types
-
-enum OpenAIError: Error, LocalizedError {
-    case missingAPIKey
-    case invalidURL
-    case encodingError
-    case invalidResponse
-    case httpError(Int)
-    case apiError(String)
-    case imageProcessingFailed
     
-    var errorDescription: String? {
-        switch self {
-        case .missingAPIKey:
-            return "OpenAI API key is missing. Please configure your API key."
-        case .invalidURL:
-            return "Invalid API URL."
-        case .encodingError:
-            return "Failed to encode request data."
-        case .invalidResponse:
-            return "Invalid response from OpenAI API."
-        case .httpError(let code):
-            return "HTTP error: \(code)"
-        case .apiError(let message):
-            return "OpenAI API error: \(message)"
-        case .imageProcessingFailed:
-            return "Failed to process image data."
+    // MARK: - Face Swap Analysis
+    
+    func analyzeFaceSwap(sourceImage: UIImage, targetImage: UIImage) async throws -> String {
+        guard !apiKey.isEmpty else {
+            throw OpenAIError.missingAPIKey
+        }
+        
+        // Convert images to base64
+        guard let sourceBase64 = sourceImage.jpegData(compressionQuality: 0.7)?.base64EncodedString(),
+              let targetBase64 = targetImage.jpegData(compressionQuality: 0.7)?.base64EncodedString() else {
+            throw OpenAIError.imageProcessingFailed
+        }
+        
+        let url = URL(string: "\(baseURL)/chat/completions")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let messages: [[String: Any]] = [
+            ["role": "system", "content": "You are an expert in face swap analysis. Analyze the provided source and target images and give a brief, encouraging assessment of their compatibility for a face swap. Focus on factors like face angle, lighting, and expression. Do not actually perform the swap, just analyze."],
+            ["role": "user", "content": [
+                ["type": "text", "text": "Analyze these two images for face swap potential. The first is the source face, the second is the target image."],
+                ["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(sourceBase64)"]],
+                ["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(targetBase64)"]]
+            ]]
+        ]
+        
+        let requestBody: [String: Any] = [
+            "model": "gpt-4o", // Using a vision-capable model
+            "messages": messages,
+            "max_tokens": 200,
+            "temperature": 0.5
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw OpenAIError.invalidResponse
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            let errorResponse = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw OpenAIError.apiError("HTTP \(httpResponse.statusCode): \(errorResponse)")
+        }
+        
+        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+           let choices = json["choices"] as? [[String: Any]],
+           let firstChoice = choices.first,
+           let message = firstChoice["message"] as? [String: Any],
+           let content = message["content"] as? String {
+            return content.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            throw OpenAIError.invalidResponse
         }
     }
 }
@@ -297,7 +229,7 @@ extension OpenAIService {
     
     /// Generates an image from a text prompt using DALL-E
     func generateImage(prompt: String, size: String = "1024x1024", quality: String = "standard") async throws -> UIImage {
-        guard !apiKey.isEmpty && apiKey != "YOUR_OPENAI_API_KEY_HERE" else {
+        guard !apiKey.isEmpty else {
             throw OpenAIError.missingAPIKey
         }
         
@@ -358,5 +290,36 @@ extension OpenAIService {
     func generateVideoWithTemplate(template: VideoTemplate, userInput: String) async throws -> String {
         let prompt = template.generatePrompt(userInput: userInput)
         return try await generateVideoFromText(prompt)
+    }
+}
+
+// MARK: - Error Types
+
+enum OpenAIError: LocalizedError {
+    case missingAPIKey
+    case invalidURL
+    case encodingError
+    case invalidResponse
+    case httpError(Int)
+    case apiError(String)
+    case imageProcessingFailed
+    
+    var errorDescription: String? {
+        switch self {
+        case .missingAPIKey:
+            return "OpenAI API Key is missing or invalid. Please configure it in settings."
+        case .invalidURL:
+            return "Invalid API URL."
+        case .encodingError:
+            return "Failed to encode request data."
+        case .invalidResponse:
+            return "Invalid response from OpenAI API."
+        case .httpError(let code):
+            return "HTTP error: \(code)"
+        case .apiError(let message):
+            return "OpenAI API error: \(message)"
+        case .imageProcessingFailed:
+            return "Failed to process image data."
+        }
     }
 }

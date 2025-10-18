@@ -203,7 +203,16 @@ struct PromptToImageView: View {
             } catch {
                 await MainActor.run {
                     isLoading = false
-                    alertMessage = "Error generating image: \(error.localizedDescription)"
+                    
+                    // Better error handling
+                    if error.localizedDescription.contains("API key") {
+                        alertMessage = "Please configure your OpenAI API key in Settings first."
+                    } else if error.localizedDescription.contains("network") {
+                        alertMessage = "Network error. Please check your internet connection."
+                    } else {
+                        alertMessage = "Error generating image: \(error.localizedDescription)"
+                    }
+                    
                     showingAlert = true
                 }
             }
@@ -212,9 +221,17 @@ struct PromptToImageView: View {
     
     private func saveImage() {
         guard let image = generatedImage else { return }
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        alertMessage = "Image saved to Photos! 📸"
-        showingAlert = true
+        
+        PhotoSaver.shared.saveImage(image) { success, error in
+            DispatchQueue.main.async {
+                if success {
+                    self.alertMessage = "Image saved to Photos successfully! 📸"
+                } else {
+                    self.alertMessage = "Failed to save image: \(error?.localizedDescription ?? "Unknown error")"
+                }
+                self.showingAlert = true
+            }
+        }
     }
     
     private func regenerateImage() {

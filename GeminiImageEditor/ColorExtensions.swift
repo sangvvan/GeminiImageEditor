@@ -32,4 +32,31 @@ extension Color {
             opacity: Double(a) / 255
         )
     }
+    
+    // MARK: - Adaptive Colors for Dark Mode
+    
+    /// Adaptive background colors that work in both light and dark modes
+    static let adaptiveCardBackground = Color(UIColor.systemBackground)
+    static let adaptiveSecondaryBackground = Color(UIColor.secondarySystemBackground)
+    static let adaptiveTertiaryBackground = Color(UIColor.tertiarySystemBackground)
+    
+    /// Feature card colors that adapt to dark mode
+    /// Note: These will fallback to system colors if custom colors aren't defined in Assets
+    static let promptToImageBackground = Color(UIColor.systemBackground)
+    static let promptToVideoBackground = Color(UIColor.systemBackground)
+    static let faceSwapBackground = Color(UIColor.systemBackground)
+    
+    // Fallback colors if custom colors aren't defined
+    static func adaptiveFeatureBackground(for feature: String) -> Color {
+        switch feature {
+        case "promptToImage":
+            return Color(UIColor.systemBackground)
+        case "promptToVideo":
+            return Color(UIColor.systemBackground)
+        case "faceSwap":
+            return Color(UIColor.systemBackground)
+        default:
+            return Color(UIColor.systemBackground)
+        }
+    }
 }

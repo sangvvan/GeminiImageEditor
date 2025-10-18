@@ -45,7 +45,7 @@ struct ContentView: View {
                             FeatureCardView(
                                 title: "Prompt to Image",
                                 icon: "photo.circle",
-                                backgroundColor: Color(hex: "#F8F0FF")
+                                backgroundColor: Color.adaptiveFeatureBackground(for: "promptToImage")
                             ) {
                                 showingPromptToImage = true
                             }
@@ -53,7 +53,7 @@ struct ContentView: View {
                             FeatureCardView(
                                 title: "Prompt to Video",
                                 icon: "video.circle",
-                                backgroundColor: Color(hex: "#FFF8F0")
+                                backgroundColor: Color.adaptiveFeatureBackground(for: "promptToVideo")
                             ) {
                                 showingPromptToVideo = true
                             }
@@ -77,7 +77,7 @@ struct ContentView: View {
                             FeatureCardView(
                                 title: "Photo Face Swap",
                                 icon: "person.crop.square",
-                                backgroundColor: Color(hex: "#F0FAFF")
+                                backgroundColor: Color.adaptiveFeatureBackground(for: "faceSwap")
                             ) {
                                 showingPhotoFaceSwap = true
                             }
@@ -85,7 +85,7 @@ struct ContentView: View {
                             FeatureCardView(
                                 title: "Video Face Swap",
                                 icon: "video.badge.plus",
-                                backgroundColor: Color(hex: "#F0FAFF")
+                                backgroundColor: Color.adaptiveFeatureBackground(for: "faceSwap")
                             ) {
                                 showingVideoFaceSwap = true
                             }

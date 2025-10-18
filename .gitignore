@@ -1,0 +1,20 @@
+# Environment variables
+.env
+*.env
+
+# API Keys and Secrets
+*.key
+*.pem
+secrets.plist
+config.json
+
+# Xcode
+.DS_Store
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+DerivedData/
+build/
+
+# iOS
+*.ipa
+*.dSYM.zip

@@ -10,47 +10,54 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject private var openAIService = OpenAIService()
-    @State private var apiKey: String = ""
     @State private var showingAlert = false
     @State private var alertMessage = ""
     @State private var isConfigured = false
+    @State private var isProductionMode = false
     
     var body: some View {
         NavigationView {
             VStack(spacing: 30) {
                 // Header
                 VStack(spacing: 16) {
-                    Image(systemName: "key.fill")
+                    Image(systemName: isProductionMode ? "checkmark.shield.fill" : "key.fill")
                         .font(.system(size: 60))
-                        .foregroundColor(.blue)
+                        .foregroundColor(isProductionMode ? .green : .blue)
                     
                     Text("OpenAI Configuration")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                     
-                    Text("Configure your OpenAI API key to enable AI features")
+                    Text(isProductionMode ? "API key configured via environment variable" : "Configure your OpenAI API key to enable AI features")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, 20)
                 
-                // API Key Input Section
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("API Key")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                    
-                    SecureField("Enter your OpenAI API key", text: $apiKey)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                    
-                    Text("Your API key is stored locally and never shared. Get your key from https://platform.openai.com/api-keys")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                // Production Mode Indicator
+                if isProductionMode {
+                    VStack(spacing: 12) {
+                        HStack {
+                            Image(systemName: "server.rack")
+                                .foregroundColor(.green)
+                            Text("Production Mode")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.green)
+                        }
+                        
+                        Text("API key is loaded from environment variable OPENAI_API_KEY")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
+                    .background(Color.green.opacity(0.1))
+                    .cornerRadius(12)
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
                 
                 // Configuration Status
                 HStack {
@@ -70,19 +77,7 @@ struct SettingsView: View {
                 
                 // Action Buttons
                 VStack(spacing: 16) {
-                    Button(action: saveAPIKey) {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                            Text("Save API Key")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(apiKey.isEmpty ? Color.gray : Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                    }
-                    .disabled(apiKey.isEmpty)
-                    
+                    // Always show test connection button
                     Button(action: testAPIKey) {
                         HStack {
                             Image(systemName: "wifi")
@@ -96,31 +91,54 @@ struct SettingsView: View {
                     }
                     .disabled(!isConfigured)
                     
-                    Button(action: clearAPIKey) {
-                        HStack {
-                            Image(systemName: "trash.fill")
-                            Text("Clear API Key")
+                    // Only show development mode buttons if not in production
+                    if !isProductionMode {
+                        Button(action: saveAPIKey) {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                Text("Save API Key")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
+                        
+                        Button(action: clearAPIKey) {
+                            HStack {
+                                Image(systemName: "trash.fill")
+                                Text("Clear API Key")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                        }
                     }
                 }
                 .padding(.horizontal, 20)
                 
                 // Instructions
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("How to get your API Key:")
+                    Text(isProductionMode ? "Production Deployment:" : "How to get your API Key:")
                         .font(.headline)
                         .fontWeight(.semibold)
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        InstructionStep(number: "1", text: "Visit https://platform.openai.com/api-keys")
-                        InstructionStep(number: "2", text: "Sign in to your OpenAI account")
-                        InstructionStep(number: "3", text: "Click 'Create new secret key'")
-                        InstructionStep(number: "4", text: "Copy the generated key and paste it above")
+                    if isProductionMode {
+                        VStack(alignment: .leading, spacing: 8) {
+                            InstructionStep(number: "✓", text: "API key configured via environment variable")
+                            InstructionStep(number: "✓", text: "Production deployment ready")
+                            InstructionStep(number: "✓", text: "User API key input disabled for security")
+                        }
+                    } else {
+                        VStack(alignment: .leading, spacing: 8) {
+                            InstructionStep(number: "1", text: "Visit https://platform.openai.com/api-keys")
+                            InstructionStep(number: "2", text: "Sign in to your OpenAI account")
+                            InstructionStep(number: "3", text: "Click 'Create new secret key'")
+                            InstructionStep(number: "4", text: "Copy the generated key and paste it above")
+                        }
                     }
                 }
                 .padding(.horizontal, 20)
@@ -140,7 +158,7 @@ struct SettingsView: View {
             )
         }
         .onAppear {
-            loadStoredAPIKey()
+            checkConfigurationStatus()
         }
         .alert("Settings", isPresented: $showingAlert) {
             Button("OK") { }
@@ -150,16 +168,15 @@ struct SettingsView: View {
     }
     
     private func saveAPIKey() {
-        guard !apiKey.isEmpty else { return }
+        // This function is now disabled in production mode
+        if isProductionMode {
+            alertMessage = "API key configuration is disabled in production mode."
+            showingAlert = true
+            return
+        }
         
-        // Store the API key securely (in a real app, use Keychain)
-        UserDefaults.standard.set(apiKey, forKey: "OpenAI_API_Key")
-        
-        // Configure the service
-        openAIService.configureAPIKey(apiKey)
-        
-        isConfigured = true
-        alertMessage = "API key saved successfully! 🎉"
+        // This should not be reached in production mode
+        alertMessage = "API key configuration is not available."
         showingAlert = true
     }
     
@@ -167,9 +184,8 @@ struct SettingsView: View {
         // Simple test to verify the API key works
         Task {
             do {
-                // Test with a simple image analysis
-                let testImage = UIImage(systemName: "photo") ?? UIImage()
-                let _ = try await openAIService.analyzeImage(testImage, prompt: "Describe this image briefly.")
+                // Test with a simple API call
+                let _ = try await openAIService.testAPIConnection()
                 
                 await MainActor.run {
                     alertMessage = "API connection successful! ✅"
@@ -185,18 +201,31 @@ struct SettingsView: View {
     }
     
     private func clearAPIKey() {
-        apiKey = ""
-        UserDefaults.standard.removeObject(forKey: "OpenAI_API_Key")
-        isConfigured = false
-        alertMessage = "API key cleared."
+        // This function is now disabled in production mode
+        if isProductionMode {
+            alertMessage = "API key clearing is disabled in production mode."
+            showingAlert = true
+            return
+        }
+        
+        // This should not be reached in production mode
+        alertMessage = "API key clearing is not available."
         showingAlert = true
     }
     
-    private func loadStoredAPIKey() {
-        if let storedKey = UserDefaults.standard.string(forKey: "OpenAI_API_Key"), !storedKey.isEmpty {
-            apiKey = storedKey
-            openAIService.configureAPIKey(storedKey)
-            isConfigured = true
+    private func checkConfigurationStatus() {
+        // Check if we're in production mode (.env file or environment variable is set)
+        let envKey = ENVLoader.shared.openaiAPIKey
+        isProductionMode = !(envKey?.isEmpty ?? true)
+        
+        // Check if API key is configured (either via .env/environment or keychain)
+        if isProductionMode {
+            // In production mode, check .env file or environment variable
+            isConfigured = !(envKey?.isEmpty ?? true)
+        } else {
+            // In development mode, check keychain
+            let storedKey = KeychainHelper.shared.load(forKey: "openai_api_key")
+            isConfigured = !(storedKey?.isEmpty ?? true)
         }
     }
 }

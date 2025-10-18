@@ -181,7 +181,7 @@ struct PhotoFaceSwapView: View {
         
         Task {
             do {
-                let analysis = try await openAIService.analyzeFaceSwapImages(sourceImage: source, targetImage: target)
+                let analysis = try await openAIService.analyzeFaceSwap(sourceImage: source, targetImage: target)
                 
                 await MainActor.run {
                     analysisResult = analysis
@@ -207,9 +207,17 @@ struct PhotoFaceSwapView: View {
     
     private func saveResult() {
         guard let image = resultImage else { return }
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        alertMessage = "Image saved to Photos! 📸"
-        showingAlert = true
+        
+        PhotoSaver.shared.saveImage(image) { success, error in
+            DispatchQueue.main.async {
+                if success {
+                    self.alertMessage = "Image saved to Photos successfully! 📸"
+                } else {
+                    self.alertMessage = "Failed to save image: \(error?.localizedDescription ?? "Unknown error")"
+                }
+                self.showingAlert = true
+            }
+        }
     }
 }
 
