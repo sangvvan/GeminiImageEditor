@@ -1,12 +1,22 @@
-# Environment variables
+# Environment variables and secrets
 .env
 *.env
+.env.local
+.env.production
+.env.development
 
 # API Keys and Secrets
 *.key
 *.pem
 secrets.plist
 config.json
+api_keys.txt
+credentials.json
+
+# Xcode user data with potential secrets
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+xcuserdata/
 
 # Xcode
 .DS_Store
